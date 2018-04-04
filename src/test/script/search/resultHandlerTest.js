@@ -35,11 +35,17 @@ QUnit.module("resultHandlerTest.js", {
 			"recordGuiFactory" : CORATEST.standardFactorySpy("recordGuiSpy"),
 			"jsClient" : CORATEST.jsClientSpy(),
 			"recordHandlerFactory" : CORATEST.standardFactorySpy("recordHandlerSpy"),
-			"indexListHandlerFactory" : CORATEST.standardFactorySpy("indexListHandlerSpy")
+			"indexListHandlerFactory" : CORATEST.standardFactorySpy("indexListHandlerSpy"),
+			"presentationFactory" : CORATEST.standardFactorySpy("presentationSpy")
 		};
 		this.spec = {
 			"dataList" : CORATEST.searchRecordList.dataList
 		};
+		this.specWithFilter = {
+				"dataList" : CORATEST.searchRecordList.dataList,
+				"filterMetadataId": "someRecordTypeGroup",
+				"filterPresentationId" : "someRecordTypePGroup"
+			};
 	},
 	afterEach : function() {
 	}
@@ -66,6 +72,21 @@ QUnit.test("testInitViewCreatedUsingFactory", function(assert) {
 	assert.strictEqual(factoredView.type, "resultHandlerViewSpy");
 });
 
+QUnit.test("testFilterPresentationSpec", function(assert) {
+	var resultHandler = CORA.resultHandler(this.dependencies, this.specWithFilter);
+	var factoredFilterPresentationSpec = this.dependencies.presentationFactory.getSpec(0);
+	assert.stringifyEqual(factoredFilterPresentationSpec.path, {});
+	assert.strictEqual(factoredFilterPresentationSpec.metadataIdUsedInData, this.specWithFilter.filterMetadataId);
+	assert.strictEqual(factoredFilterPresentationSpec.cPresentation, this.specWithFilter.filterPresentationId);
+});
+
+QUnit.test("testFactoredFilterPresentationIsAddedToView", function(assert) {
+	var resultHandler = CORA.resultHandler(this.dependencies, this.specWithFilter);
+	var factoredView = this.dependencies.resultHandlerViewFactory.getFactored(0);
+	var factoredFilterPresentation = this.dependencies.presentationFactory.getFactored(0);
+	assert.strictEqual(factoredView.getAddedPresentation(0).presentation, factoredFilterPresentation.getView());
+});
+
 QUnit.test("testInitViewSpec", function(assert) {
 	var resultHandler = CORA.resultHandler(this.dependencies, this.spec);
 	var factoredViewSpec = this.dependencies.resultHandlerViewFactory.getSpec(0);
@@ -75,6 +96,19 @@ QUnit.test("testInitViewSpec", function(assert) {
 	assert.strictEqual(factoredViewSpec.toNo, "11");
 	assert.strictEqual(factoredViewSpec.totalNo, "11");
 	assert.strictEqual(factoredViewSpec.resultHandler, resultHandler);
+});
+
+QUnit.test("testFilterViewIsAddedBeforeItems", function(assert) {
+	var resultHandler = CORA.resultHandler(this.dependencies, this.specWithFilter);
+	var factoredView = this.dependencies.resultHandlerViewFactory.getFactored(0);
+
+	var recordHandler = this.dependencies.recordHandlerFactory.getFactored(0);
+	var factoredFilterPresentation = this.dependencies.presentationFactory.getFactored(0);
+	assert.strictEqual(factoredView.getAddedPresentation(0).presentation, factoredFilterPresentation.getView());
+	assert.strictEqual(factoredView.getAddedPresentation(1).presentation, recordHandler
+			.getManagedGuiItem().getListView());
+	assert.notStrictEqual(factoredView.getAddedPresentation(11), undefined);
+	assert.strictEqual(factoredView.getAddedPresentation(12), undefined);
 });
 
 QUnit.test("testInitViewCreatesRecordHandlerForEachResultItem", function(assert) {

@@ -26,6 +26,7 @@ var CORA = (function(cora) {
 
 		function start() {
 			view = createView();
+			possiblyAddFilterPresentation();
 			createAndAddPresentationsForEachResultItem();
 			possiblyAddIndexButton();
 		}
@@ -40,6 +41,27 @@ var CORA = (function(cora) {
 				"resultHandler" : out
 			};
 			return dependencies.resultHandlerViewFactory.factor(viewSpec);
+		}
+		
+		function possiblyAddFilterPresentation(){
+			if(resultHasFilter()){
+				addFilterPresentation();
+			}
+		}
+		
+		function resultHasFilter(){
+			return dependencies.presentationFactory !== undefined 
+					&& spec.filterPresentationId !== undefined;
+		}
+		
+		function addFilterPresentation(){
+			var filterPresentationSpec = {
+					"path" : {},
+					"metadataIdUsedInData" : spec.filterMetadataId,
+					"cPresentation" : spec.filterPresentationId
+				}
+				var presentation = dependencies.presentationFactory.factor(filterPresentationSpec);
+				view.addChildPresentation(presentation.getView());
 		}
 
 		function createAndAddPresentationsForEachResultItem() {
