@@ -63,7 +63,8 @@ var CORA = (function(cora) {
 				"afterLoginMethod" : afterLogin,
 				"afterLogoutMethod" : afterLogout,
 				"setErrorMessage" : jsClientView.addErrorMessage,
-				"appTokenBaseUrl" : spec.appTokenBaseUrl
+				"appTokenBaseUrl" : spec.appTokenBaseUrl,
+				baseUrl : spec.baseUrl
 			};
 			var loginManager = dependencies.globalFactories.loginManagerFactory
 					.factor(loginManagerSpec);

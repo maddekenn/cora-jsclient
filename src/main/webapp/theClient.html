@@ -168,13 +168,15 @@
 <script type="text/javascript" src="script/recordGui/recordGui.js"></script>
 <script type="text/javascript" src="script/recordGui/recordGuiFactory.js"></script>
 
+<script type="text/javascript" src="useServer.js"></script>
 
 
 <script type="text/javascript">
+	window.onload = start;
+	
 	var name = "A Client";
 	var baseUrl = "http://epc.ub.uu.se/cora/rest/";
 	var appTokenBaseUrl = "http://epc.ub.uu.se/";
-	window.onload = start;
 	var jsClientSpec;
 	var jsClientDependencies;
 	var jsClient;
@@ -188,94 +190,7 @@
 	var recordTypeProvider;
 	var uploadManager;
 
-	function start() {
-		var href = window.location.href;
-		if(href.indexOf("systemone")!==-1){
-			document.getElementById("systemOneCSS").disabled=false;
-			useCora();
-		}else if(href.indexOf("alvin")!==-1){
-			document.getElementById("alvinCSS").disabled=false;
-			useAlvin();
-		}else if(href.indexOf("diva")!==-1){
-			document.getElementById("divaCSS").disabled=false;
-			useDiva();
-		}else{
-			askForServerToUse();
-		}
-	}
-
-
-	function askForServerToUse() {
-		var questionSpec = {
-			"text" : "Vilken server vill du använda?",
-			"buttons" : [ {
-				"text" : "Uppsala Universitetsbibliotek",
-				"onclickFunction" : useUb
-			}, {
-				"text" : "localhost",
-				"onclickFunction" : useLocalhost
-			}, {
-				"text" : "localhost8089",
-				"onclickFunction" : useLocalhost2
-			}, {
-				"text" : "ip from url",
-				"onclickFunction" : useLocalhost3
-			}, {
-				"text" : "SystemOne",
-				"onclickFunction" : useCora
-			}, {
-				"text" : "Alvin",
-				"onclickFunction" : useAlvin
-			}, {
-				"text" : "DiVA",
-				"onclickFunction" : useDiva
-			} ]
-		};
-		var question = CORA.question(questionSpec);
-		var questionView = question.getView();
-		document.body.appendChild(questionView);
-	}
-
-	function useUb() {
-		baseUrl = "http://epc.ub.uu.se/cora/rest/";
-		appTokenBaseUrl = "http://epc.ub.uu.se/";
-		startDependencies();
-	}
-
-	function useLocalhost() {
-		appTokenBaseUrl = "http://localhost:8080/";
-		baseUrl = "http://localhost:8080/therest/rest/";
-		startDependencies();
-	}
-
-	function useLocalhost2() {
-		appTokenBaseUrl = "http://localhost:8089/";
-		baseUrl = "http://localhost:8080/therest/rest/";
-		startDependencies();
-	}
-	function useLocalhost3() {
-		appTokenBaseUrl = "/";
-		baseUrl = "/therest/rest/";
-		startDependencies();
-	}
-	function useCora() {
-		name = "Systemone";
-		baseUrl = "https://cora.epc.ub.uu.se/systemone/rest/";
-		appTokenBaseUrl = "https://cora.epc.ub.uu.se/systemone/";
-		startDependencies();
-	}
-	function useAlvin() {
-		name = "Alvin";
-		baseUrl = "https://cora.epc.ub.uu.se/alvin/rest/";
-		appTokenBaseUrl = "https://cora.epc.ub.uu.se/alvin/";
-		startDependencies();
-	}
-	function useDiva() {
-		name = "DiVA";
-		baseUrl = "https://cora.epc.ub.uu.se/diva/rest/";
-		appTokenBaseUrl = "https://cora.epc.ub.uu.se/diva/";
-		startDependencies();
-	}
+	
 
 	var metadataProviderStarted = false;
 	function metadataProviderReady() {
@@ -309,6 +224,8 @@
 	}
 
 	function startDependencies() {
+		tryToPreventAccidentialLeavOfPage();
+		
 		authTokenHolder = CORA.authTokenHolder();
 		xmlHttpRequestFactory = CORA.xmlHttpRequestFactory();
 
@@ -410,7 +327,15 @@
 		};
 		recordTypeProvider = CORA.reloadableRecordTypeProvider(
 				dependenciesReloadableRecordTypeProvider, recordTypeProviderSpec);
-
+	}
+	
+	function tryToPreventAccidentialLeavOfPage(){
+		window.addEventListener("beforeunload", function (e) {
+		 	 var confirmationMessage = "\o/";
+		  	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+		  	return confirmationMessage;  //Webkit, Safari, Chrome etc.
+		});
+		
 	}
 
 	function startJsClient() {

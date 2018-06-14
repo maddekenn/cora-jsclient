@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Olov McKie
+ * Copyright 2016, 2018 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -50,6 +50,9 @@ var CORATEST = (function(coraTest) {
 		function callOnblurWithValue(valueToSet){
 			spec.onblurFunction(valueToSet);
 		}
+		function callOnkeyupWithValue(valueToSet){
+			spec.onkeyupFunction(valueToSet);
+		}
 		var out = Object.freeze({
 			"type" : "pVarViewSpy",
 			getDependencies : getDependencies,
@@ -59,7 +62,8 @@ var CORATEST = (function(coraTest) {
 			getValue : getValue,
 			setState : setState,
 			getState : getState,
-			callOnblurWithValue:callOnblurWithValue
+			callOnblurWithValue:callOnblurWithValue,
+			callOnkeyupWithValue:callOnkeyupWithValue
 		});
 		return out;
 	};

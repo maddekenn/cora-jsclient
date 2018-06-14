@@ -23,7 +23,8 @@ QUnit
 				"loginManagerTest.js",
 				{
 					beforeEach : function() {
-						this.loginOption;
+						addStandardAppTokensToLoginMenu = true;
+							this.loginOption;
 						this.getAddedWindowEvents = function() {
 							return addedEvents;
 						};
@@ -38,6 +39,7 @@ QUnit
 						var oldAddEvent = window.addEventListener;
 						window.addEventListener = this.addEvent;
 						this.dependencies = {
+							textProvider : CORATEST.textProviderSpy(),
 							"loginManagerViewFactory" : CORATEST.loginManagerViewFactorySpy(),
 							"appTokenLoginFactory" : CORATEST.appTokenLoginFactorySpy(),
 							"webRedirectLoginFactory" : CORATEST
@@ -72,7 +74,8 @@ QUnit
 							"afterLoginMethod" : this.afterLoginMethod,
 							"afterLogoutMethod" : this.afterLogoutMethod,
 							"setErrorMessage" : this.setErrorMessage,
-							"appTokenBaseUrl" : "someAppTokenBaseUrl/"
+							"appTokenBaseUrl" : "someAppTokenBaseUrl/",
+							baseUrl : "http://epc.ub.uu.se/cora/rest/"
 						};
 						this.loginManager = CORA.loginManager(this.dependencies, this.spec);
 
@@ -95,6 +98,25 @@ QUnit
 								"url" : "https://epc.ub.uu.se/Shibboleth.sso/Login/uu?target=https://epc.ub.uu.se/systemone/idplogin/login"
 							};
 							this.loginManager.login(this.loginOption);
+						}
+
+						this.answerListLoginUnitsCall = function(no) {
+							var ajaxCallSpy0 = this.dependencies.ajaxCallFactory.getFactored(no);
+							var jsonLoginUnitList = JSON.stringify(CORATEST.loginUnitList);
+							var answer = {
+								"spec" : ajaxCallSpy0.getSpec(),
+								"responseText" : jsonLoginUnitList
+							};
+							ajaxCallSpy0.getSpec().loadMethod(answer);
+						}
+						this.answerListLoginsCall = function(no) {
+							var ajaxCallSpy0 = this.dependencies.ajaxCallFactory.getFactored(no);
+							var jsonLoginList = JSON.stringify(CORATEST.loginList);
+							var answer = {
+								"spec" : ajaxCallSpy0.getSpec(),
+								"responseText" : jsonLoginList
+							};
+							ajaxCallSpy0.getSpec().loadMethod(answer);
 						}
 					},
 					afterEach : function() {
@@ -120,6 +142,138 @@ QUnit.test("testGetSpec", function(assert) {
 	assert.strictEqual(loginManager.getSpec(), this.spec);
 });
 
+QUnit.test("testCallForLoginUnitsAndLogin", function(assert) {
+	var loginManager = this.loginManager;
+	var ajaxCallSpy = this.dependencies.ajaxCallFactory.getFactored(0);
+	var ajaxCallSpec = ajaxCallSpy.getSpec();
+	assert.strictEqual(ajaxCallSpec.url, this.spec.baseUrl + "record/loginUnit");
+	assert.strictEqual(ajaxCallSpec.requestMethod, "GET");
+	assert.strictEqual(ajaxCallSpec.loadMethod, loginManager.fetchLoginUnitCallback);
+	assert.strictEqual(ajaxCallSpec.errorMethod, loginManager.fetchLoginUnitErrorCallback);
+	assert.strictEqual(ajaxCallSpec.timeoutMethod, loginManager.fetchLoginUnitTimeoutCallback);
+	assert.strictEqual(ajaxCallSpec.data, undefined);
+	assert.strictEqual(ajaxCallSpec.timeoutInMS, undefined);
+
+	var ajaxCallSpy1 = this.dependencies.ajaxCallFactory.getFactored(1);
+	var ajaxCallSpec1 = ajaxCallSpy1.getSpec();
+	assert.strictEqual(ajaxCallSpec1.url, this.spec.baseUrl + "record/login");
+	assert.strictEqual(ajaxCallSpec1.requestMethod, "GET");
+	assert.strictEqual(ajaxCallSpec1.loadMethod, loginManager.fetchLoginCallback);
+	assert.strictEqual(ajaxCallSpec1.errorMethod, loginManager.fetchLoginErrorCallback);
+	assert.strictEqual(ajaxCallSpec1.timeoutMethod, loginManager.fetchLoginTimeoutCallback);
+	assert.strictEqual(ajaxCallSpec1.data, undefined);
+	assert.strictEqual(ajaxCallSpec1.timeoutInMS, undefined);
+});
+
+QUnit.test("testAnswerForLoginUnitsOnlySetInViewAfterAnswerForBothLists", function(assert) {
+	var loginManager = this.loginManager;
+	var factoredView = this.dependencies.loginManagerViewFactory.getFactored(0);
+	assert.strictEqual(factoredView.getLoginOptions(), undefined);
+	this.answerListLoginUnitsCall(0);
+	assert.strictEqual(factoredView.getLoginOptions(), undefined);
+	this.answerListLoginsCall(1);
+	assert.notEqual(factoredView.getLoginOptions(), undefined);
+});
+
+QUnit.test("testAnswerForLoginUnitsOnlySetInViewAfterAnswerForBothListsReOrdered",
+		function(assert) {
+			var loginManager = this.loginManager;
+			var factoredView = this.dependencies.loginManagerViewFactory.getFactored(0);
+			assert.strictEqual(factoredView.getLoginOptions(), undefined);
+			this.answerListLoginsCall(1);
+			assert.strictEqual(factoredView.getLoginOptions(), undefined);
+			this.answerListLoginUnitsCall(0);
+			assert.notEqual(factoredView.getLoginOptions(), undefined);
+		});
+
+QUnit
+		.test(
+				"testAnswerForLoginUnits",
+				function(assert) {
+					this.loginManager = CORA.loginManager(this.dependencies, this.spec);
+					var loginManager = this.loginManager;
+					var factoredView = this.dependencies.loginManagerViewFactory.getFactored(0);
+					this.answerListLoginUnitsCall(0);
+					this.answerListLoginsCall(1);
+					var expectedLoginOptions = [
+							{
+								"text" : "appToken as 141414",
+								"type" : "appTokenLogin",
+								"userId" : "141414",
+								"appToken" : "63e6bd34-02a1-4c82-8001-158c104cae0e"
+							},
+							{
+								"text" : "appToken as 151515 alvin",
+								"type" : "appTokenLogin",
+								"userId" : "151515",
+								"appToken" : "63ef81cd-1d88-4a6a-aff0-f0d809a74d34"
+							},
+							{
+								"text" : "appToken as 161616 diva",
+								"type" : "appTokenLogin",
+								"userId" : "161616",
+								"appToken" : "f7973be9-02e0-4c42-979b-09e42372a02a"
+							},
+							{
+								text : "translated_uuLoginUnitText",
+								type : "webRedirect",
+								url : "https://epc.ub.uu.se/Shibboleth.sso/Login/uu?target=https://epc.ub.uu.se/idplogin/login"
+							},
+							{
+								text : "translated_testLoginUnitText",
+								type : "webRedirect",
+								url : "https://epc.ub.uu.se/Shibboleth.sso/Login/test?target=https://epc.ub.uu.se/idplogin/login"
+							} ];
+					assert.stringifyEqual(factoredView.getLoginOptions(), expectedLoginOptions);
+				});
+QUnit
+		.test(
+				"testAnswerForLoginUnitsWithoutStandardApptokenLogins",
+				function(assert) {
+					addStandardAppTokensToLoginMenu = false;
+					this.loginManager = CORA.loginManager(this.dependencies, this.spec);
+					var loginManager = this.loginManager;
+					var factoredView = this.dependencies.loginManagerViewFactory.getFactored(1);
+					this.answerListLoginUnitsCall(2);
+					this.answerListLoginsCall(3);
+					var expectedLoginOptions = [
+							{
+								text : "translated_uuLoginUnitText",
+								type : "webRedirect",
+								url : "https://epc.ub.uu.se/Shibboleth.sso/Login/uu?target=https://epc.ub.uu.se/idplogin/login"
+							},
+							{
+								text : "translated_testLoginUnitText",
+								type : "webRedirect",
+								url : "https://epc.ub.uu.se/Shibboleth.sso/Login/test?target=https://epc.ub.uu.se/idplogin/login"
+							} ];
+					assert.stringifyEqual(factoredView.getLoginOptions(), expectedLoginOptions);
+				});
+
+QUnit.test("testLoginUnitErrorMessage", function(assert) {
+	var loginManager = this.loginManager;
+	loginManager.fetchLoginUnitErrorCallback();
+	assert.strictEqual(this.getErrorMessage(), "Fetching of loginUnits failed!");
+});
+
+QUnit.test("testLoginUnitTimeoutMessage", function(assert) {
+	var loginManager = this.loginManager;
+	loginManager.fetchLoginUnitTimeoutCallback();
+	assert.strictEqual(this.getErrorMessage(), "Fetching of loginUnits timedout!");
+});
+
+QUnit.test("testLoginErrorMessage", function(assert) {
+	var loginManager = this.loginManager;
+	loginManager.fetchLoginErrorCallback();
+	assert.strictEqual(this.getErrorMessage(), "Fetching of logins failed!");
+});
+
+QUnit.test("testLoginTimeoutMessage", function(assert) {
+	var loginManager = this.loginManager;
+	loginManager.fetchLoginTimeoutCallback();
+	assert.strictEqual(this.getErrorMessage(), "Fetching of logins timedout!");
+});
+
 QUnit.test("testInitCreatesALoginManagerView", function(assert) {
 	var loginManager = this.loginManager;
 	var factoredView = this.dependencies.loginManagerViewFactory.getFactored(0);
@@ -133,85 +287,17 @@ QUnit.test("testInitCreatesALoginManagerViewsViewIsReturnedForGetHtml", function
 	assert.strictEqual(loginManagerHtml, factoredView.getHtml());
 });
 
-QUnit
-		.test(
-				"testInitLoginManagerViewSpec",
-				function(assert) {
-					var loginManager = this.loginManager;
-					var factoredView = this.dependencies.loginManagerViewFactory.getFactored(0);
-					var factoredSpec = factoredView.getSpec();
+QUnit.test("testInitLoginManagerViewSpec", function(assert) {
+	var loginManager = this.loginManager;
+	var factoredView = this.dependencies.loginManagerViewFactory.getFactored(0);
+	var factoredSpec = factoredView.getSpec();
 
-					var expectedLoginOptions = [ {
-						"text" : "appToken as 141414",
-						"call" : loginManager.appTokenLogin
-					}, 
-					{
-						"text" : "appToken as 151515 alvin",
-						"call" : loginManager.appTokenLogin
-					},
-					{
-						"text" : "appToken as 161616 diva",
-						"call" : loginManager.appTokenLogin
-					},
-					{
-						"text" : "Uppsala webredirect",
-						"call" : loginManager.webRedirectLogin
-					}, {
-						"text" : "Uppsala SystemOne webredirect",
-						"call" : loginManager.webRedirectLogin
-					}, {
-						"text" : "Uppsala Alvin webredirect",
-						"call" : loginManager.webRedirectLogin
-					}, {
-						"text" : "Uppsala DiVA webredirect",
-						"call" : loginManager.webRedirectLogin
-					} ];
-					var factoredLoginOptions = factoredSpec.loginOptions;
+	var factoredLoginOptions = factoredSpec.loginOptions;
 
-					assert.strictEqual(factoredLoginOptions.length, 7);
-
-					assert.strictEqual(factoredLoginOptions[0].text, expectedLoginOptions[0].text);
-					assert.strictEqual(factoredLoginOptions[0].type, "appTokenLogin");
-					assert.strictEqual(factoredLoginOptions[0].userId, "141414");
-					assert.strictEqual(factoredLoginOptions[0].appToken, "63e6bd34-02a1-4c82-8001-158c104cae0e");
-
-					assert.strictEqual(factoredLoginOptions[1].text, expectedLoginOptions[1].text);
-					assert.strictEqual(factoredLoginOptions[1].type, "appTokenLogin");
-					assert.strictEqual(factoredLoginOptions[1].userId, "151515");
-					assert.strictEqual(factoredLoginOptions[1].appToken, "63ef81cd-1d88-4a6a-aff0-f0d809a74d34");
-					
-					assert.strictEqual(factoredLoginOptions[2].text, expectedLoginOptions[2].text);
-					assert.strictEqual(factoredLoginOptions[2].type, "appTokenLogin");
-					assert.strictEqual(factoredLoginOptions[2].userId, "161616");
-					assert.strictEqual(factoredLoginOptions[2].appToken, "f7973be9-02e0-4c42-979b-09e42372a02a");
-
-					assert.strictEqual(factoredLoginOptions[3].text, expectedLoginOptions[3].text);
-					assert.strictEqual(factoredLoginOptions[3].type, "webRedirectLogin");
-					assert
-							.strictEqual(factoredLoginOptions[3].url,
-									"https://epc.ub.uu.se/Shibboleth.sso/Login/uu?target=https://epc.ub.uu.se/idplogin/login");
-
-					assert.strictEqual(factoredLoginOptions[4].text, expectedLoginOptions[4].text);
-					assert.strictEqual(factoredLoginOptions[4].type, "webRedirectLogin");
-					assert
-							.strictEqual(factoredLoginOptions[4].url,
-									"https://epc.ub.uu.se/Shibboleth.sso/Login/uu?target=https://epc.ub.uu.se/systemone/idplogin/login");
-
-					assert.strictEqual(factoredLoginOptions[5].text, expectedLoginOptions[5].text);
-					assert.strictEqual(factoredLoginOptions[5].type, "webRedirectLogin");
-					assert
-							.strictEqual(factoredLoginOptions[5].url,
-									"https://epc.ub.uu.se/Shibboleth.sso/Login/uu?target=https://epc.ub.uu.se/alvin/idplogin/login");
-
-					assert.strictEqual(factoredLoginOptions[6].text, expectedLoginOptions[6].text);
-					assert.strictEqual(factoredLoginOptions[6].type, "webRedirectLogin");
-					assert
-							.strictEqual(factoredLoginOptions[6].url,
-									"https://epc.ub.uu.se/Shibboleth.sso/Login/uu?target=https://epc.ub.uu.se/diva/idplogin/login");
-
-					assert.strictEqual(factoredSpec.loginMethod, loginManager.login);
-					assert.strictEqual(factoredSpec.logoutMethod, loginManager.logout);
-				});
+	assert.strictEqual(factoredLoginOptions, undefined);
+	assert.strictEqual(factoredSpec.loginMethod, loginManager.login);
+	assert.strictEqual(factoredSpec.logoutMethod, loginManager.logout);
+});
 
 QUnit.test("testAppTokenLoginFactoryIsCalledOnAppTokenLogin", function(assert) {
 	var loginManager = this.loginManager;
@@ -235,8 +321,8 @@ QUnit.test("testAppTokenLoginCallsServerOnAppTokenLogin", function(assert) {
 	loginManager.login({
 		"text" : "someText",
 		"type" : "appTokenLogin",
-		"userId":"testUserId",
-		"appToken": "testAppToken"
+		"userId" : "testUserId",
+		"appToken" : "testAppToken"
 	});
 	var factored0 = this.dependencies.appTokenLoginFactory.getFactored(0);
 	assert.strictEqual(factored0.getUserId(0), "testUserId");
@@ -344,7 +430,7 @@ QUnit.test("testLogoutCallIsMadeOnAppTokenLogout", function(assert) {
 
 	loginManager.logout();
 
-	var ajaxCallSpy = this.dependencies.ajaxCallFactory.getFactored(0);
+	var ajaxCallSpy = this.dependencies.ajaxCallFactory.getFactored(2);
 	var ajaxCallSpec = ajaxCallSpy.getSpec();
 	assert.strictEqual(ajaxCallSpec.url, "http://localhost:8080/apptokenverifier/"
 			+ "rest/apptoken/141414");

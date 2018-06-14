@@ -34,5 +34,18 @@ var CORATESTHELPER = (function(coraTestHelper) {
 		object.dispatchEvent(event);
 	};
 
+	coraTestHelper.simulateKeyup = function(object, keyup) {
+		var event = new KeyboardEvent("keyup", {
+			"key" : keyup
+		});
+		object.dispatchEvent(event);
+	};
+
+	coraTestHelper.simulateBlur = function(object) {
+		var event = new Event("blur", {
+		});
+		object.dispatchEvent(event);
+	};
+
 	return coraTestHelper;
 }(CORATESTHELPER || {}));

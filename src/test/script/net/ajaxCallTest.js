@@ -98,6 +98,17 @@ QUnit.test("init", function(assert) {
 	assert.strictEqual(ajaxCall.spec, this.spec);
 });
 
+QUnit.test("defaultTimeout", function(assert) {
+	var ajaxCall = CORA.ajaxCall(this.spec);
+	assert.strictEqual(ajaxCall.getCurrentTimeout(), 90000);
+});
+
+QUnit.test("setTimeout", function(assert) {
+	this.spec.timeoutInMS = 10000;
+	var ajaxCall = CORA.ajaxCall(this.spec);
+	assert.strictEqual(ajaxCall.getCurrentTimeout(), 10000);
+});
+
 QUnit.test("testResponseTypeNotSet", function(assert) {
 	this.xmlHttpRequestFactoryMultipleSpy.setResponseStatus(201);
 	this.xmlHttpRequestFactoryMultipleSpy.setResponseText("a dummy response text");

@@ -20,7 +20,7 @@ var CORA = (function(cora) {
 	"use strict";
 	cora.ajaxCall = function(spec) {
 
-		var defaultTimeoutMS = 10000;
+		var defaultTimeoutMS = 90000;
 		var timeoutTime = spec.timeoutInMS ? spec.timeoutInMS : defaultTimeoutMS;
 		var intervalId;
 		var xhr = factorXmlHttpRequestUsingFactoryFromSpec();
@@ -182,10 +182,15 @@ var CORA = (function(cora) {
 			}
 		}
 
+		function getCurrentTimeout() {
+			return timeoutTime;
+		}
+
 		var out = Object.freeze({
 			"type" : "ajaxCall",
 			xhr : xhr,
-			spec : spec
+			spec : spec,
+			getCurrentTimeout : getCurrentTimeout
 		});
 		return out;
 	};

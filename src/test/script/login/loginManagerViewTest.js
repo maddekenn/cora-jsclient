@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uppsala University Library
+ * Copyright 2017, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -62,8 +62,17 @@ QUnit.module("loginManagerViewTest.js", {
 			"call" : testWebRedirectLogin
 		} ];
 		this.loginOptions = loginOptions;
+		
+		var loginOptions2 = [ {
+			"text" : "appToken2",
+			"call" : testAppTokenLogin
+		}, {
+			"text" : "webRedirect uu2",
+			"call" : testWebRedirectLogin
+		} ];
+		this.loginOptions2 = loginOptions2;
+		
 		this.spec = {
-			"loginOptions" : loginOptions,
 			"loginMethod" : loginMethod,
 			"logoutMethod" : logoutMethod
 		};
@@ -143,15 +152,22 @@ QUnit.test("testGetMenu", function(assert) {
 QUnit.test("testLoginOptions", function(assert) {
 	var loginManagerView = this.getLoginManagerView();
 	var menu = this.getMenu();
+	assert.strictEqual(menu.childNodes.length, 0);
+});
+
+QUnit.test("testSetLoginOptions", function(assert) {
+	var loginManagerView = this.getLoginManagerView();
+	loginManagerView.setLoginOptions(this.loginOptions2);
+	var menu = this.getMenu();
 	assert.strictEqual(menu.childNodes.length, 2);
-	assert.strictEqual(menu.childNodes[0].textContent, "appToken");
-	assert.strictEqual(menu.childNodes[1].textContent, "webRedirect uu");
+	assert.strictEqual(menu.childNodes[0].textContent, "appToken2");
+	assert.strictEqual(menu.childNodes[1].textContent, "webRedirect uu2");
 
 	CORATESTHELPER.simulateOnclick(menu.childNodes[0]);
-	assert.strictEqual(this.getLoginMethodCalled(0), this.loginOptions[0]);
+	assert.strictEqual(this.getLoginMethodCalled(0), this.loginOptions2[0]);
 
 	CORATESTHELPER.simulateOnclick(menu.childNodes[1]);
-	assert.strictEqual(this.getLoginMethodCalled(1), this.loginOptions[1]);
+	assert.strictEqual(this.getLoginMethodCalled(1), this.loginOptions2[1]);
 });
 
 QUnit.test("testSetUserId", function(assert) {
@@ -178,6 +194,7 @@ QUnit.test("testSetStateLoggedin", function(assert) {
 
 QUnit.test("testSetStateLoggedout", function(assert) {
 	var loginManagerView = this.getLoginManagerView();
+	loginManagerView.setLoginOptions(this.loginOptions);
 	var menu = this.getMenu();
 	this.openMenu();
 	loginManagerView.setState(CORA.loginManager.LOGGEDOUT);
@@ -193,6 +210,7 @@ QUnit.test("testSetStateLoggedout", function(assert) {
 
 QUnit.test("testSetStateFirstLoggedinThenLoggedout", function(assert) {
 	var loginManagerView = this.getLoginManagerView();
+	loginManagerView.setLoginOptions(this.loginOptions);
 	var menu = this.getMenu();
 
 	loginManagerView.setState(CORA.loginManager.LOGGEDIN);

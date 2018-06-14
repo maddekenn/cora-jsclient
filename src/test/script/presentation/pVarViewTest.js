@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Olov McKie
+ * Copyright 2016, 2018 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -180,6 +180,9 @@ QUnit.test("testStateShownInClassName", function(assert) {
 	assert.strictEqual(view.className, "pVar somePresentationId");
 	pVarView.setState("error");
 	assert.strictEqual(view.className, "pVar somePresentationId error");
+	pVarView.setState("errorStillFocused");
+	assert.strictEqual(view.className, "pVar somePresentationId errorStillFocused");
+	pVarView.setState("error");
 	infoSpy.setInfoLevel(1);
 	pVarView.updateClassName();
 	assert.strictEqual(view.className,
@@ -223,8 +226,44 @@ QUnit.test("testInputOnblur", function(assert) {
 	var pVarView = this.getPVarView();
 	pVarView.setValue("a Value");
 	var valueView = this.getValueView();
-	valueView.onblur();
+	CORATESTHELPER.simulateBlur(this.getValueView());
 	assert.strictEqual(valueFromView, "a Value");
+});
+QUnit.test("testInputOnblurNotSet", function(assert) {
+	var valueFromView = "";
+	
+	var pVarView = this.getPVarView();
+	pVarView.setValue("a Value");
+	var valueView = this.getValueView();
+	CORATESTHELPER.simulateBlur(this.getValueView());
+	assert.strictEqual(valueFromView, "");
+});
+
+QUnit.test("testInputOnkeyup", function(assert) {
+	var valueFromView = "";
+	this.spec.onkeyupFunction = function(value) {
+		valueFromView = value;
+	};
+	
+	var pVarView = this.getPVarView();
+	pVarView.setValue("a Value");
+	var valueView = this.getValueView();
+	
+	CORATESTHELPER.simulateKeyup(this.getValueView(), "a");
+	
+	assert.strictEqual(valueFromView, "a Value");
+});
+
+QUnit.test("testInputOnkeyupNotSet", function(assert) {
+	var valueFromView = "";
+	
+	var pVarView = this.getPVarView();
+	pVarView.setValue("a Value");
+	var valueView = this.getValueView();
+	
+	CORATESTHELPER.simulateKeyup(this.getValueView(), "a");
+	
+	assert.strictEqual(valueFromView, "");
 });
 
 QUnit.test("testOutputText", function(assert) {

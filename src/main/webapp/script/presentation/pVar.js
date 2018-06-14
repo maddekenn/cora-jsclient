@@ -1,6 +1,6 @@
 /*
  * Copyright 2016 Uppsala University Library
- * Copyright 2016, 2017 Olov McKie
+ * Copyright 2016, 2017, 2018 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -27,8 +27,7 @@ var CORA = (function(cora) {
 		var path = spec.path;
 		var cPresentation = spec.cPresentation;
 		var recordInfo = cPresentation.getFirstChildByNameInData("recordInfo");
-		var presentationId = CORA.coraData(recordInfo)
-				.getFirstAtomicValueByNameInData("id");
+		var presentationId = CORA.coraData(recordInfo).getFirstAtomicValueByNameInData("id");
 
 		var metadataId = spec.metadataIdUsedInData;
 
@@ -44,8 +43,7 @@ var CORA = (function(cora) {
 		var defText = textProvider.getTranslation(defTextId);
 
 		var regEx = cMetadataElement.getFirstAtomicValueByNameInData("regEx");
-		var nameInData = cMetadataElement
-				.getFirstAtomicValueByNameInData("nameInData");
+		var nameInData = cMetadataElement.getFirstAtomicValueByNameInData("nameInData");
 
 		var pVarViewSpec = {
 			"mode" : mode,
@@ -72,14 +70,14 @@ var CORA = (function(cora) {
 					"text" : "presentationId: " + presentationId
 				} ]
 			},
-			"onblurFunction" : onBlur
+			"onblurFunction" : onBlur,
+			onkeyupFunction : onkeyup
 		};
 
 		if (cPresentation.containsChildWithNameInData("emptyTextId")) {
-			var cEmptyTextId = CORA.coraData(cPresentation
-					.getFirstChildByNameInData("emptyTextId"));
-			var emptyTextId = cEmptyTextId
-					.getFirstAtomicValueByNameInData("linkedRecordId");
+			var cEmptyTextId = CORA
+					.coraData(cPresentation.getFirstChildByNameInData("emptyTextId"));
+			var emptyTextId = cEmptyTextId.getFirstAtomicValueByNameInData("linkedRecordId");
 			var emptyText = textProvider.getTranslation(emptyTextId);
 			pVarViewSpec.placeholderText = emptyText;
 		}
@@ -87,21 +85,18 @@ var CORA = (function(cora) {
 		var state = "ok";
 		var previousValue = "";
 		pubSub.subscribe("setValue", path, undefined, handleMsg);
-		pubSub.subscribe("validationError", path, undefined,
-				handleValidationError);
+		pubSub.subscribe("validationError", path, undefined, handleValidationError);
 
 		function getOutputFormat() {
 			if (cPresentation.containsChildWithNameInData("outputFormat")) {
-				return cPresentation
-						.getFirstAtomicValueByNameInData("outputFormat");
+				return cPresentation.getFirstAtomicValueByNameInData("outputFormat");
 			}
 			return "text";
 		}
 
 		function getInputType() {
 			if (cPresentation.containsChildWithNameInData("inputType")) {
-				return cPresentation
-						.getFirstAtomicValueByNameInData("inputType");
+				return cPresentation.getFirstAtomicValueByNameInData("inputType");
 			}
 			return "input";
 		}
@@ -149,7 +144,11 @@ var CORA = (function(cora) {
 		}
 
 		function onBlur(valueFromView) {
-			checkRegEx(valueFromView);
+			handleValueFromView(valueFromView, "error");
+		}
+
+		function handleValueFromView(valueFromView, errorState) {
+			checkRegEx(valueFromView, errorState);
 			updateView();
 			if (state === "ok" && valueHasChanged(valueFromView)) {
 				var data = {
@@ -161,13 +160,17 @@ var CORA = (function(cora) {
 			}
 		}
 
-		function checkRegEx(valueFromView) {
+		function checkRegEx(valueFromView, errorState) {
 			var value = valueFromView;
 			if (value.length === 0 || new RegExp(regEx).test(value)) {
 				state = "ok";
 			} else {
-				state = "error";
+				state = errorState;
 			}
+		}
+
+		function onkeyup(valueFromView) {
+			handleValueFromView(valueFromView, "errorStillFocused");
 		}
 
 		function updateView() {
@@ -195,24 +198,22 @@ var CORA = (function(cora) {
 				"readLink" : link,
 				"loadInBackground" : loadInBackground
 			};
-			dependencies.clientInstanceProvider.getJsClient()
-					.openRecordUsingReadLink(openInfo);
+			dependencies.clientInstanceProvider.getJsClient().openRecordUsingReadLink(openInfo);
 		}
 
 		function openTextIdRecord(event) {
-			openLinkedRecordForLink(event, cMetadataElement
-					.getFirstChildByNameInData("textId").actionLinks.read);
+			openLinkedRecordForLink(event,
+					cMetadataElement.getFirstChildByNameInData("textId").actionLinks.read);
 		}
 
 		function openDefTextIdRecord(event) {
-			openLinkedRecordForLink(event, cMetadataElement
-					.getFirstChildByNameInData("defTextId").actionLinks.read);
+			openLinkedRecordForLink(event,
+					cMetadataElement.getFirstChildByNameInData("defTextId").actionLinks.read);
 		}
 
 		function openMetadataIdRecord(event) {
-			openLinkedRecordForLink(
-					event,
-					cPresentation.getFirstChildByNameInData("presentationOf").actionLinks.read);
+			openLinkedRecordForLink(event, cPresentation
+					.getFirstChildByNameInData("presentationOf").actionLinks.read);
 		}
 
 		function getDependencies() {
@@ -231,6 +232,7 @@ var CORA = (function(cora) {
 			getRegEx : getRegEx,
 			getState : getState,
 			onBlur : onBlur,
+			onkeyup : onkeyup,
 			handleValidationError : handleValidationError,
 			openTextIdRecord : openTextIdRecord,
 			openDefTextIdRecord : openDefTextIdRecord,

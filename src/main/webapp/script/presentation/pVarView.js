@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Olov McKie
+ * Copyright 2016, 2018 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -83,6 +83,9 @@ var CORA = (function(cora) {
 			if (stateIndicatesError()) {
 				className += " error";
 			}
+			if (stateIndicatesErrorStillFocused()) {
+				className += " errorStillFocused";
+			}
 			if (infoIsShown()) {
 				className += " infoActive";
 			}
@@ -91,6 +94,9 @@ var CORA = (function(cora) {
 
 		function stateIndicatesError() {
 			return state === "error";
+		}
+		function stateIndicatesErrorStillFocused() {
+			return state === "errorStillFocused";
 		}
 
 		function infoIsShown() {
@@ -107,13 +113,26 @@ var CORA = (function(cora) {
 
 		function createInput() {
 			valueView = createTextTypeInput();
-			if (spec.onblurFunction !== undefined) {
-				valueView.onblur = function() {
-					spec.onblurFunction(valueView.value);
-				};
-			}
+			possiblyAddOnkeyupEvent(valueView);
+			possiblyAddOnblurEvent(valueView);
 			possiblyAddPlaceholderText(valueView);
 			return valueView;
+		}
+
+		function possiblyAddOnkeyupEvent(valueViewIn) {
+			if (spec.onkeyupFunction !== undefined) {
+				valueViewIn.onkeyup = function() {
+					spec.onkeyupFunction(valueViewIn.value);
+				};
+			}
+		}
+
+		function possiblyAddOnblurEvent(valueViewIn) {
+			if (spec.onblurFunction !== undefined) {
+				valueViewIn.onblur = function() {
+					spec.onblurFunction(valueViewIn.value);
+				};
+			}
 		}
 
 		function possiblyAddPlaceholderText(inputNew) {

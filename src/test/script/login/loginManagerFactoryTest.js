@@ -32,7 +32,9 @@ QUnit.module("loginManagerFactoryTest.js", {
 				"type" : "fakeAuthTokenHolder"
 			},
 			"ajaxCallFactory" : {
-				"type" : "fakeAjaxCallFactory"
+				type : "fakeAjaxCallFactory",
+				factor : function() {
+				}
 			}
 		};
 		this.loginManagerFactory = CORA.loginManagerFactory(this.dependencies);

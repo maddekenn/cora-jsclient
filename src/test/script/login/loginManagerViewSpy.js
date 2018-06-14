@@ -24,44 +24,48 @@ var CORATEST = (function(coraTest) {
 		var logoutOptions;
 		var state;
 		var html = CORA.gui.createSpanWithClassName("loginManagerViewSpy");
-		function getHtml(){
+		function getHtml() {
 			return html;
 		}
 
-		function setUserId(userIdIn){
+		function setUserId(userIdIn) {
 			userIds.push(userIdIn);
 		}
-		
-		function getUserId(number){
+
+		function getUserId(number) {
 			return userIds[number];
 		}
-		
-		function getLoginOptions(){
+
+		function getLoginOptions() {
 			return loginOptions;
 		}
-		
-		function setState(stateIn){
+		function setLoginOptions(loginOptionsIn){
+			loginOptions = loginOptionsIn;
+		}
+
+		function setState(stateIn) {
 			state = stateIn;
 		}
-		function getDependencies(){
+		function getDependencies() {
 			return dependencies;
 		}
-		function getSpec(){
+		function getSpec() {
 			return spec;
 		}
-		function getState(){
+		function getState() {
 			return state;
 		}
-		
+
 		var out = Object.freeze({
 			getDependencies : getDependencies,
 			getSpec : getSpec,
 			getHtml : getHtml,
 			setState : setState,
 			getState : getState,
-			getLoginOptions:getLoginOptions,
-			setUserId:setUserId,
-			getUserId:getUserId
+			getLoginOptions : getLoginOptions,
+			setUserId : setUserId,
+			getUserId : getUserId,
+			setLoginOptions : setLoginOptions
 		});
 		return out;
 	};
