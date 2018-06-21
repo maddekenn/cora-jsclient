@@ -23,10 +23,10 @@ var CORA = (function(cora) {
 
 		var viewSpec = {
 			"headerText" : searchId,
-			"openSearchMethod" : openSearch
+			"openListMethod" : openList
 		};
 
-		var view = dependencies.searchRecordHandlerViewFactory.factor(viewSpec);
+		var view = dependencies.listWithFilterHandlerViewFactory.factor(viewSpec);
 
 		function getIdFromRecord(record) {
 			var cData = CORA.coraData(record.data);
@@ -38,7 +38,7 @@ var CORA = (function(cora) {
 			return view.getView();
 		}
 
-		function openSearch() {
+		function openList() {
 			var searchHandlerSpec = {
 				"metadataId" : getLinkValueFromSearchRecord("metadataId"),
 				"presentationId" : getLinkValueFromSearchRecord("presentationId")
@@ -74,7 +74,7 @@ var CORA = (function(cora) {
 			getSpec : getSpec,
 			getDependencies : getDependencies,
 			getView : getView,
-			openSearch : openSearch,
+			openList : openList,
 			addManagedGuiItem : addManagedGuiItem
 		});
 		return out;

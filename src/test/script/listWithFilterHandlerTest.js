@@ -23,8 +23,8 @@ QUnit.module("listWithFilterHandlerTest.js", {
 		this.search = CORATEST.searchRecordList.dataList.data[0].record;
 
 		this.dependencies = {
-			"searchRecordHandlerViewFactory" : CORATEST
-					.standardFactorySpy("searchRecordHandlerViewSpy"),
+			"listWithFilterHandlerViewFactory" : CORATEST
+					.standardFactorySpy("listWithFilterHandlerViewSpy"),
 			"managedGuiItemFactory" : CORATEST.standardFactorySpy("managedGuiItemSpy"),
 			"jsClient" : CORATEST.jsClientSpy(),
 			"searchHandlerJSClientIntegratorFactory" : CORATEST.standardFactorySpy("searchHandlerJsClientIntegratorSpy")
@@ -39,47 +39,50 @@ QUnit.module("listWithFilterHandlerTest.js", {
 });
 
 QUnit.test("init", function(assert) {
-	var searchRecordHandler = CORA.listWithFilterHandler(this.dependencies, this.spec);
-	assert.strictEqual(searchRecordHandler.type, "listWithFilterHandler");
+	var listWithFilterHandler = CORA.listWithFilterHandler(this.dependencies, this.spec);
+	assert.strictEqual(listWithFilterHandler.type, "listWithFilterHandler");
 });
 
-//QUnit.test("testGetDependencies", function(assert) {
-//	var searchRecordHandler = CORA.searchRecordHandler(this.dependencies, this.spec);
-//	assert.strictEqual(searchRecordHandler.getDependencies(), this.dependencies);
-//});
-//
-//QUnit.test("testGetSpec", function(assert) {
-//	var searchRecordHandler = CORA.searchRecordHandler(this.dependencies, this.spec);
-//	assert.strictEqual(searchRecordHandler.getSpec(), this.spec);
-//});
-//
-//QUnit.test("testViewIsCreatedUsingFactory", function(assert) {
-//	var searchRecordHandler = CORA.searchRecordHandler(this.dependencies, this.spec);
-//	var factoredView = this.dependencies.searchRecordHandlerViewFactory.getFactored(0);
-//	assert.strictEqual(searchRecordHandler.getView(), factoredView.getView());
-//});
-//
-//QUnit.test("testViewSpec", function(assert) {
-//	var searchRecordHandler = CORA.searchRecordHandler(this.dependencies, this.spec);
-//	var factoredSpec = this.dependencies.searchRecordHandlerViewFactory.getSpec(0);
-//	assert.strictEqual(factoredSpec.headerText, "coraTextSearch");
-//	assert.strictEqual(factoredSpec.openSearchMethod, searchRecordHandler.openSearch);
-//});
-//
-//QUnit.test("testAddManagedGuiItemPassedOnToView", function(assert) {
-//	var searchRecordHandler = CORA.searchRecordHandler(this.dependencies, this.spec);
-//	var factoredView = this.dependencies.searchRecordHandlerViewFactory.getFactored(0);
-//	var aItem = CORATEST.managedGuiItemSpy();
-//	searchRecordHandler.addManagedGuiItem(aItem);
-//	assert.strictEqual(factoredView.getAddedManagedGuiItem(0), aItem);
-//});
-//
-//QUnit.test("testOpenSearchFactorSearchHandler", function(assert) {
-//	var searchRecordHandler = CORA.searchRecordHandler(this.dependencies, this.spec);
-//	searchRecordHandler.openSearch();
-//	var factoredSpec = this.dependencies.searchHandlerJSClientIntegratorFactory.getSpec(0);
-//
-//	assert.strictEqual(factoredSpec.metadataId, "autocompleteSearchGroup");
-//	assert.strictEqual(factoredSpec.presentationId, "autocompleteSearchPGroup");
-//	assert.strictEqual(factoredSpec.searchLink, this.search.actionLinks.search);
-//});
+QUnit.test("testGetDependencies", function(assert) {
+	var listWithFilterHandler = CORA.listWithFilterHandler(this.dependencies, this.spec);
+	assert.strictEqual(listWithFilterHandler.getDependencies(), this.dependencies);
+});
+
+QUnit.test("testGetSpec", function(assert) {
+	var listWithFilterHandler = CORA.listWithFilterHandler(this.dependencies, this.spec);
+	assert.strictEqual(listWithFilterHandler.getSpec(), this.spec);
+});
+
+QUnit.test("testViewIsCreatedUsingFactory", function(assert) {
+	var listWithFilterHandler = CORA.listWithFilterHandler(this.dependencies, this.spec);
+	var factoredView = this.dependencies.listWithFilterHandlerViewFactory.getFactored(0);
+	assert.strictEqual(listWithFilterHandler.getView(), factoredView.getView());
+});
+
+QUnit.test("testViewSpec", function(assert) {
+	var listWithFilterHandler = CORA.listWithFilterHandler(this.dependencies, this.spec);
+	var factoredSpec = this.dependencies.listWithFilterHandlerViewFactory.getSpec(0);
+	assert.strictEqual(factoredSpec.headerText, "coraTextSearch");
+	assert.strictEqual(factoredSpec.openListMethod, listWithFilterHandler.openList);
+});
+
+QUnit.test("testAddManagedGuiItemPassedOnToView", function(assert) {
+	var listWithFilterHandler = CORA.listWithFilterHandler(this.dependencies, this.spec);
+	var factoredView = this.dependencies.listWithFilterHandlerViewFactory.getFactored(0);
+	var aItem = CORATEST.managedGuiItemSpy();
+	listWithFilterHandler.addManagedGuiItem(aItem);
+	assert.strictEqual(factoredView.getAddedManagedGuiItem(0), aItem);
+});
+
+QUnit.test("testOpenListFactoredSpec", function(assert) {
+	var listWithFilterHandler = CORA.listWithFilterHandler(this.dependencies, this.spec);
+	listWithFilterHandler.openList();
+	var factoredSpec = this.dependencies.searchHandlerJSClientIntegratorFactory.getSpec(0);
+
+	//TODO: det här ska vara id på filter group och filter presentation group från den
+	//recordtype som öppnat
+	
+	assert.strictEqual(factoredSpec.metadataId, "autocompleteSearchGroup");
+	assert.strictEqual(factoredSpec.presentationId, "autocompleteSearchPGroup");
+	assert.strictEqual(factoredSpec.searchLink, this.search.actionLinks.search);
+});
