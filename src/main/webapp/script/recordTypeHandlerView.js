@@ -33,6 +33,16 @@ var CORA = (function(cora) {
 			buttonView = CORA.gui.createSpanWithClassName("buttonView");
 			view.appendChild(buttonView);
 			possiblyCreateCreateButton();
+			var buttonSpec = {
+					"className" : "iconButton showSearchButton",
+					action : {
+						method : function() {
+							spec.createNewMethod("true");
+						}
+					}
+				};
+			var listButton = CORA.gui.button(buttonSpec);
+			buttonView.appendChild(listButton);
 		}
 
 		function createHeader() {
@@ -40,6 +50,7 @@ var CORA = (function(cora) {
 			if (specHasFetchListMethod()) {
 				headerNew.className = headerNew.className + " clickable";
 				headerNew.onclick = spec.fetchListMethod;
+				
 			}
 			headerNew.textContent = spec.headerText;
 			return headerNew;
