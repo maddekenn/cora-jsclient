@@ -19,7 +19,7 @@
 var CORA = (function(cora) {
 	"use strict";
 	cora.listWithFilterHandler = function(dependencies, spec) {
-		var searchId = getIdFromRecord(spec.searchRecord);
+		var searchId = getIdFromRecord(spec.recordTypeRecord);
 
 		var viewSpec = {
 			"headerText" : searchId,
@@ -40,21 +40,21 @@ var CORA = (function(cora) {
 
 		function openList() {
 			var searchHandlerSpec = {
-				"metadataId" : getLinkValueFromSearchRecord("metadataId"),
-				"presentationId" : getLinkValueFromSearchRecord("presentationId")
+				"metadataId" : getLinkValueFromSearchRecord("filter"),
+				"presentationId" : getLinkValueFromSearchRecord("filterPresentation")
 			};
 			addSearchLinkToSpec(searchHandlerSpec);
 			dependencies.searchHandlerJSClientIntegratorFactory.factor(searchHandlerSpec);
 		}
 
 		function getLinkValueFromSearchRecord(id) {
-			var cSearchRecordData = CORA.coraData(spec.searchRecord.data);
+			var cSearchRecordData = CORA.coraData(spec.recordTypeRecord.data);
 			var cRecordLink = CORA.coraData(cSearchRecordData.getFirstChildByNameInData(id));
 			return cRecordLink.getFirstAtomicValueByNameInData("linkedRecordId");
 		}
 
 		function addSearchLinkToSpec(searchHandlerSpec) {
-			searchHandlerSpec.searchLink = spec.searchRecord.actionLinks.search;
+			searchHandlerSpec.searchLink = spec.recordTypeRecord.actionLinks.search;
 		}
 
 		function addManagedGuiItem(managedGuiItem) {

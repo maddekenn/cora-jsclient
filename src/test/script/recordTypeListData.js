@@ -176,7 +176,33 @@ var CORATEST = (function(coraTest) {
 						                      "name": "groupOfRecordType",
 						                      "value": "presentation",
 						                      "repeatId": "1"
-						                } ],
+						                },
+									{
+										"name": "filter",
+										"children": [
+											{
+												"name": "linkedRecordType",
+												"value": "metadataGroup"
+											},
+											{
+												"name": "linkedRecordId",
+												"value": "personFilterGroup"
+											}
+										]
+									},
+									{
+										"name": "filterPresentation",
+										"children": [
+											{
+												"name": "linkedRecordType",
+												"value": "presentationGroup"
+											},
+											{
+												"name": "linkedRecordId",
+												"value": "personFilterPGroup"
+											}
+										]
+									} ],
 								"name" : "recordType"
 							},
 							"actionLinks" : {

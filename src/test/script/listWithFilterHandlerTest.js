@@ -20,7 +20,7 @@
 
 QUnit.module("listWithFilterHandlerTest.js", {
 	beforeEach : function() {
-		this.search = CORATEST.searchRecordList.dataList.data[0].record;
+		this.recordType = CORATEST.recordTypeList.dataList.data[0].record;
 
 		this.dependencies = {
 			"listWithFilterHandlerViewFactory" : CORATEST
@@ -30,11 +30,11 @@ QUnit.module("listWithFilterHandlerTest.js", {
 			"searchHandlerJSClientIntegratorFactory" : CORATEST.standardFactorySpy("searchHandlerJsClientIntegratorSpy")
 		};
 		this.spec = {
-			"searchRecord" : this.search,
+			"recordTypeRecord" : this.recordType,
 			"baseUrl" : "http://epc.ub.uu.se/cora/rest/"
 		};
 	},
-	afterEach : function() { 
+	afterEach : function() {
 	}
 });
 
@@ -62,7 +62,7 @@ QUnit.test("testViewIsCreatedUsingFactory", function(assert) {
 QUnit.test("testViewSpec", function(assert) {
 	var listWithFilterHandler = CORA.listWithFilterHandler(this.dependencies, this.spec);
 	var factoredSpec = this.dependencies.listWithFilterHandlerViewFactory.getSpec(0);
-	assert.strictEqual(factoredSpec.headerText, "coraTextSearch");
+	assert.strictEqual(factoredSpec.headerText, "presentationVar");
 	assert.strictEqual(factoredSpec.openListMethod, listWithFilterHandler.openList);
 });
 
@@ -81,8 +81,8 @@ QUnit.test("testOpenListFactoredSpec", function(assert) {
 
 	//TODO: det här ska vara id på filter group och filter presentation group från den
 	//recordtype som öppnat
-	
-	assert.strictEqual(factoredSpec.metadataId, "autocompleteSearchGroup");
-	assert.strictEqual(factoredSpec.presentationId, "autocompleteSearchPGroup");
-	assert.strictEqual(factoredSpec.searchLink, this.search.actionLinks.search);
+
+	assert.strictEqual(factoredSpec.metadataId, "personFilterGroup");
+	assert.strictEqual(factoredSpec.presentationId, "personFilterPGroup");
+	assert.strictEqual(factoredSpec.searchLink, this.recordType.actionLinks.search);
 });
