@@ -851,6 +851,8 @@ QUnit.test("testShowTimeoutMessage", function(assert) {
 QUnit.test("initCheckRightGuiCreatedForExisting", function(assert) {
 	var recordHandler = CORA.recordHandler(this.dependencies, this.spec);
 	var managedGuiItemSpy = this.dependencies.managedGuiItemFactory.getFactored(0);
+	var recordHandlerViewSpy = this.recordHandlerViewFactorySpy.getFactored(0);
+	assert.notOk(recordHandlerViewSpy.getReloadRecordUsingFunction(0));
 	this.answerCall(0);
 
 	assert.strictEqual(recordHandler.getDataIsChanged(), false);
@@ -873,6 +875,8 @@ QUnit.test("initCheckRightGuiCreatedForExisting", function(assert) {
 	var managedGuiItem = this.dependencies.managedGuiItemFactory.getFactored(0);
 	var item = managedGuiItem.getAddedMenuPresentation(0);
 	assert.strictEqual(item.nodeName, "SPAN");
+	
+	assert.ok(recordHandlerViewSpy.getReloadRecordUsingFunction(0));
 });
 
 QUnit.test("initCheckRightGuiCreatedForList", function(assert) {

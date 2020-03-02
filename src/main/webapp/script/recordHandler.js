@@ -62,7 +62,7 @@ var CORA = (function(cora) {
 				"extraClassName": "recordHandler",
 				"showDataMethod": showData,
 				"copyDataMethod": copyData,
-				"showIncomingLinksMethod": showIncomingLinks
+				"showIncomingLinksMethod": showIncomingLinks,
 			};
 			return dependencies.recordHandlerViewFactory.factor(recordHandlerViewSpec);
 		};
@@ -217,13 +217,17 @@ var CORA = (function(cora) {
 		};
 
 		const resetViewsAndProcessFetchedRecord = function(answer) {
-			busy.hideWithEffect();
-			recordHandlerView.clearViews();
+			resetViewsAndProcessFetchedRecord2(answer);
 			let messageSpec = {
 				"message": "Tjohoo, det där gick ju bra, data sparat på servern!",
 				"type": CORA.message.POSITIVE
 			};
 			messageHolder.createMessage(messageSpec);
+		};
+
+		const resetViewsAndProcessFetchedRecord2 = function(answer) {
+			busy.hideWithEffect();
+			recordHandlerView.clearViews();
 			initComplete = false;
 			dataIsChanged = false;
 			managedGuiItem.setChanged(dataIsChanged);
@@ -272,6 +276,7 @@ var CORA = (function(cora) {
 
 			addEditButtonsToView();
 			possiblyShowShowIncomingLinksButton();
+			recordHandlerView.addReloadRecordUsingFunction(reloadRecordFromServer);
 			busy.hideWithEffect();
 		};
 
@@ -486,6 +491,11 @@ var CORA = (function(cora) {
 			let incomingLinksListHandler = dependencies.globalFactories.incomingLinksListHandlerFactory
 				.factor(illhSpec);
 			recordHandlerView.addToIncomingLinksView(incomingLinksListHandler.getView());
+		};
+
+		const reloadRecordFromServer = function() {
+		//	//fetchDataFromServer(processFetchedRecord);
+		//	fetchDataFromServer(resetViewsAndProcessFetchedRecord2);
 		};
 
 		const getDependencies = function() {

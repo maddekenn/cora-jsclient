@@ -31,6 +31,8 @@ var CORATEST = (function(coraTest) {
 		var showShowIncomingLinks = false;
 		var showIndexButton = false;
 		var objectsAddedToIncomingLinksView = [];
+		
+		var functionsAddedAsReloadRecord = [];
 
 		var spyView = document.createElement("span");
 		function getView() {
@@ -113,6 +115,14 @@ var CORATEST = (function(coraTest) {
 			return objectsAddedToIncomingLinksView[no];
 		}
 
+		function addReloadRecordFunction(functionToAdd){
+			functionsAddedAsReloadRecord.push(functionToAdd);
+		}
+		
+		function getReloadRecordFunction(no){
+			return functionsAddedAsReloadRecord[no];
+		}
+
 		var out = Object.freeze({
 			getView : getView,
 			addToShowView : addToShowView,
@@ -139,6 +149,8 @@ var CORATEST = (function(coraTest) {
 			getObjectAddedToIncomingLinksView : getObjectAddedToIncomingLinksView,
 			showShowIncomingLinksButton : showShowIncomingLinksButton,
 			getShowShowIncomingLinksButton : getShowShowIncomingLinksButton,
+			addReloadRecordUsingFunction : addReloadRecordFunction,
+			getReloadRecordUsingFunction : getReloadRecordFunction
 		});
 		return out;
 	};
