@@ -494,8 +494,7 @@ var CORA = (function(cora) {
 		};
 
 		const reloadRecordFromServer = function() {
-		//	//fetchDataFromServer(processFetchedRecord);
-		//	fetchDataFromServer(resetViewsAndProcessFetchedRecord2);
+			fetchDataFromServer(resetViewsAndProcessFetchedRecord2);
 		};
 
 		const getDependencies = function() {

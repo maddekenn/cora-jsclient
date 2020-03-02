@@ -879,6 +879,45 @@ QUnit.test("initCheckRightGuiCreatedForExisting", function(assert) {
 	assert.ok(recordHandlerViewSpy.getReloadRecordUsingFunction(0));
 });
 
+QUnit.test("testReloadRecordDataIsChanged", function(assert) {
+	this.spec.createNewRecord = "false";
+	var recordHandler = CORA.recordHandler(this.dependencies, this.spec);
+	var recordHandlerViewSpy = this.recordHandlerViewFactorySpy.getFactored(0);
+	var managedGuiItemSpy = this.dependencies.managedGuiItemFactory.getFactored(0);
+	assert.notOk(recordHandlerViewSpy.getReloadRecordUsingFunction(0));
+	this.answerCall(0);
+	var reloadFunction = recordHandlerViewSpy.getReloadRecordUsingFunction(0); 
+	assert.ok(reloadFunction);
+
+	reloadFunction();
+	var ajaxCallSpy = this.ajaxCallFactorySpy.getFactored(1);
+
+	var ajaxCallSpec = ajaxCallSpy.getSpec();
+	assert.strictEqual(ajaxCallSpec.url,
+			"http://epc.ub.uu.se/cora/rest/record/recordType/recordType");
+	assert.strictEqual(ajaxCallSpec.requestMethod, "GET");
+	assert.strictEqual(ajaxCallSpec.accept, "application/vnd.uub.record+json");
+
+	var factoredRecordGuiSpec0 = this.dependencies.recordGuiFactory.getSpec(0);
+	assert.strictEqual(recordHandlerViewSpy.getClearViewsWasCalled(), false);
+
+	this.answerCall(1);
+
+	assert.strictEqual(recordHandlerViewSpy.getClearViewsWasCalled(), true);
+	
+	var factoredRecordGui1 = this.dependencies.recordGuiFactory.getFactored(1);
+	var factoredRecordGuiSpec1 = this.dependencies.recordGuiFactory.getSpec(1);
+
+	assert.strictEqual(factoredRecordGuiSpec1.metadataId, factoredRecordGuiSpec0.metadataId);
+	assert.strictEqual(factoredRecordGuiSpec1.dataDivider, factoredRecordGuiSpec0.dataDivider);
+	
+	var presentationFormIdUsed = factoredRecordGui1.getPresentationIdUsed(0);
+	assert.strictEqual(presentationFormIdUsed, "recordTypeFormPGroup");
+
+	var factoredForm = factoredRecordGui1.getReturnedPresentations(0);
+	assert.strictEqual(factoredForm.getView(), recordHandlerViewSpy.getAddedEditView(1));
+});
+
 QUnit.test("initCheckRightGuiCreatedForList", function(assert) {
 	var recordHandler = CORA.recordHandler(this.dependencies, this.specList);
 	var managedGuiItemSpy = this.dependencies.managedGuiItemFactory.getFactored(0);
