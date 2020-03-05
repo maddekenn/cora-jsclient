@@ -32,6 +32,7 @@ var CORA = (function(cora) {
 		let dataIsChanged = false;
 		let metadataForRecordType;
 		let recordTypeId;
+		let actionLinks;
 
 		const start = function() {
 			managedGuiItem = createManagedGuiItem();
@@ -71,6 +72,7 @@ var CORA = (function(cora) {
 			if ("true" === createNewRecord) {
 				createGuiForNew(spec.record);
 			} else {
+				actionLinks = spec.record.actionLinks;
 				if ("true" === fetchLatestDataFromServer) {
 					fetchDataFromServer(processFetchedRecord);
 				} else {
@@ -236,7 +238,7 @@ var CORA = (function(cora) {
 
 		const fetchDataFromServer = function(callAfterAnswer) {
 			busy.show();
-			let readLink = spec.record.actionLinks.read;
+			let readLink = actionLinks.read;
 			let callSpec = {
 				"requestMethod": readLink.requestMethod,
 				"url": readLink.url,
@@ -250,6 +252,7 @@ var CORA = (function(cora) {
 
 		const processFetchedRecord = function(answer) {
 			fetchedRecord = getRecordPartFromAnswer(answer);
+			actionLinks = fetchedRecord.actionLinks;
 			let data = fetchedRecord.data;
 			processFetchedRecordData(data);
 		};

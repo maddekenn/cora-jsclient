@@ -76,6 +76,14 @@ QUnit.module("recordHandlerTest.js", {
 			"partOfList" : "false",
 			"createNewRecord" : "true",
 			"recordTypeRecordIdForNew" : "recordType",
+//			"record" : this.record,
+			"jsClient" : CORATEST.jsClientSpy()
+		};
+		this.specForNewWithData = {
+			"fetchLatestDataFromServer" : "false",
+			"partOfList" : "false",
+			"createNewRecord" : "true",
+			"recordTypeRecordIdForNew" : "recordType",
 			"record" : this.record,
 			"jsClient" : CORATEST.jsClientSpy()
 		};
@@ -995,6 +1003,31 @@ QUnit.test("testCreateNewCall", function(assert) {
 	assert.strictEqual(updateButtonSpec.className, "update");
 });
 
+QUnit.test("testCreateNewCall", function(assert) {
+	var recordHandler = CORA.recordHandler(this.dependencies, this.specForNew);
+	var factoredRecordGui = this.dependencies.recordGuiFactory.getFactored(0);
+	assert.strictEqual(factoredRecordGui.getDataValidated(), 0);
+
+	var recordHandlerViewSpy = this.recordHandlerViewFactorySpy.getFactored(0);
+	var createButtonSpec = recordHandlerViewSpy.getAddedButton(0);
+	createButtonSpec.onclickMethod();
+
+	this.answerCall(0);
+
+	var reloadFunction = recordHandlerViewSpy.getReloadRecordUsingFunction(0); 
+	assert.ok(reloadFunction);
+
+	reloadFunction();
+	var ajaxCallSpy = this.ajaxCallFactorySpy.getFactored(1);
+
+	var ajaxCallSpec = ajaxCallSpy.getSpec();
+	assert.strictEqual(ajaxCallSpec.url,
+			"http://epc.ub.uu.se/cora/rest/record/recordType/recordType");
+	assert.strictEqual(ajaxCallSpec.requestMethod, "GET");
+	assert.strictEqual(ajaxCallSpec.accept, "application/vnd.uub.record+json");
+
+});
+
 QUnit.test("testCreateNewCallValidationError", function(assert) {
 	var recordHandler = CORA.recordHandler(this.dependencies, this.specForNew);
 	var factoredRecordGui = this.dependencies.recordGuiFactory.getFactored(0);
@@ -1053,7 +1086,7 @@ QUnit.test("rightGuiCreatedPresentationMetadataIsMissingForNew", function(assert
 	};
 	this.dependencies.recordGuiFactory = recordGuiFactorySpy;
 
-	var recordHandler = CORA.recordHandler(this.dependencies, this.specForNew);
+	var recordHandler = CORA.recordHandler(this.dependencies, this.specForNewWithData);
 	var recordHandlerViewSpy = this.recordHandlerViewFactorySpy.getFactored(0);
 
 	assert.strictEqual(recordHandlerViewSpy.getObjectAddedToEditView(0),
