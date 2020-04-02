@@ -68,6 +68,8 @@ QUnit.test("testFactorAddedDependencies", function(assert) {
 	assert.strictEqual(addedDep.searchRecordHandlerViewFactory.type,
 			"searchRecordHandlerViewFactory");
 	assert.strictEqual(addedDep.managedGuiItemFactory.type, "managedGuiItemFactory");
+	assert.strictEqual(addedDep.textProvider,
+			this.dependencies.textProvider);
 	assert.strictEqual(addedDep.jsClient, this.spec.jsClient);
 });
 

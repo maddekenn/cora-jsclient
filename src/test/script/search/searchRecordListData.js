@@ -135,7 +135,19 @@ var CORATEST = (function(coraTest) {
 										} ,{
 										      "name": "searchGroup",
 										      "value": "autocomplete"
-										    }],
+										    },{
+										        "name": "textId",
+										        "children": [
+										          {
+										            "name": "linkedRecordType",
+										            "value": "coraText"
+										          },
+										          {
+										            "name": "linkedRecordId",
+										            "value": "coraTextSearchText"
+										          }
+										        ]
+										      }],
 								"name" : "search"
 							},
 							"actionLinks" : {
