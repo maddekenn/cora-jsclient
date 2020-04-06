@@ -23,12 +23,32 @@ var CORA = (function(cora) {
 		var searchId = getIdFromRecord(spec.searchRecord);
 
 		var viewSpec = {
-			"headerText" : searchId,
+			"headerText" : getHeadlineText(spec.searchRecord),
 			"openSearchMethod" : openSearch
 		};
 
 		var view = dependencies.searchRecordHandlerViewFactory.factor(viewSpec);
 
+		
+		function getHeadlineText(searchRecord){
+			var cData = CORA.coraData(searchRecord.data);
+			if(textIdIsMissingInData(cData)){
+				return searchId;
+			}
+			return getTranslatedText(cData);
+		}
+
+		function textIdIsMissingInData(cData){
+			return !cData.containsChildWithNameInData("textId");
+		}
+
+		function getTranslatedText(cData){
+			var cTextIdGroup = CORA.coraData(cData.getFirstChildByNameInData("textId"));
+			var textId = cTextIdGroup.getFirstAtomicValueByNameInData("linkedRecordId");
+			return dependencies.textProvider.getTranslation(textId);
+		}
+
+		
 		function getIdFromRecord(record) {
 			var cData = CORA.coraData(record.data);
 			var cRecordInfo = CORA.coraData(cData.getFirstChildByNameInData("recordInfo"));

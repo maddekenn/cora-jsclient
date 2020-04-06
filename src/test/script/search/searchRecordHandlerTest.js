@@ -28,7 +28,8 @@ QUnit.module("searchRecordHandlerTest.js", {
 					.standardFactorySpy("searchRecordHandlerViewSpy"),
 			"managedGuiItemFactory" : CORATEST.standardFactorySpy("managedGuiItemSpy"),
 			"jsClient" : CORATEST.jsClientSpy(),
-			"searchHandlerJSClientIntegratorFactory" : CORATEST.standardFactorySpy("searchHandlerJsClientIntegratorSpy")
+			"searchHandlerJSClientIntegratorFactory" : CORATEST.standardFactorySpy("searchHandlerJsClientIntegratorSpy"),
+			"textProvider" : CORATEST.textProviderSpy()
 		};
 		this.spec = {
 			"searchRecord" : this.search,
@@ -63,7 +64,14 @@ QUnit.test("testViewIsCreatedUsingFactory", function(assert) {
 QUnit.test("testViewSpec", function(assert) {
 	var searchRecordHandler = CORA.searchRecordHandler(this.dependencies, this.spec);
 	var factoredSpec = this.dependencies.searchRecordHandlerViewFactory.getSpec(0);
-	assert.strictEqual(factoredSpec.headerText, "coraTextSearch");
+	assert.strictEqual(factoredSpec.headerText, "translated_coraTextSearchText");
+	assert.strictEqual(factoredSpec.openSearchMethod, searchRecordHandler.openSearch);
+});
+QUnit.test("testHeaderWhenNoText", function(assert) {
+	this.spec.searchRecord = CORATEST.searchRecordList.dataList.data[1].record;
+	var searchRecordHandler = CORA.searchRecordHandler(this.dependencies, this.spec);
+	var factoredSpec = this.dependencies.searchRecordHandlerViewFactory.getSpec(0);
+	assert.strictEqual(factoredSpec.headerText, "someSearch");
 	assert.strictEqual(factoredSpec.openSearchMethod, searchRecordHandler.openSearch);
 });
 

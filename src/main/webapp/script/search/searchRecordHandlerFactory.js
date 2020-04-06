@@ -37,6 +37,7 @@ var CORA = (function(cora) {
 				"searchRecordHandlerViewFactory" : CORA.searchRecordHandlerViewFactory(),
 				"managedGuiItemFactory" : CORA.managedGuiItemFactory(),
 				"jsClient" : spec.jsClient,
+				"textProvider" : dependencies.textProvider,
 				"searchHandlerJSClientIntegratorFactory" : CORA
 						.searchHandlerJsClientIntegratorFactory(searchHandlerJsClientIntegratorDep)
 			};
