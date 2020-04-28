@@ -33,7 +33,6 @@ var CORA = (function(cora) {
 		var nameInData = getNameInDataForMetadataId(ref);
 		var attributes = getAttributesForMetadataId(ref);
 		var dataChildrenForMetadata = getDataChildrenForMetadata(nameInData, attributes);
-
 		var noOfRepeatsForThisChild = calculateMinRepeat();
 		var childInstancesCanNotBeRemoved = [];
 		var childInstancesCanBeRemoved = [];

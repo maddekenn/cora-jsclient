@@ -19,16 +19,6 @@
  */
 
 function MetadataProviderStub() {
-	// function createRecordInfoJson(id) {
-	// return '{"recordInfo":{"children":[{"id":"' + id +
-	// '"},{"type":"metadata"},'
-	// + '{"createdBy":"userId"},{"updatedBy":"userId"}]}}';
-	// }
-	// function createNameInDataTextIdDefTextId(id) {
-	// return '{"nameInData":"' + id + '"},{"textId":"' + id +
-	// 'Text"},{"defTextId":"' + id
-	// + 'DeffText"}';
-	// }
 	function createRecordInfoJson(id) {
 		return {
 			"name" : "recordInfo",
@@ -152,10 +142,6 @@ function MetadataProviderStub() {
 			"name" : "childReference",
 			"repeatId" : repeatId,
 			"children" : [ 
-				
-				
-				
-				
 				{
 				"name" : "ref",
 				"children" : [ {
@@ -165,10 +151,6 @@ function MetadataProviderStub() {
 					"name" : "linkedRecordId",
 					"value" : ref
 				} ]
-			// ,
-			// "attributes": {
-			// "type": attribute
-			// }
 			}, {
 				"name" : "repeatMin",
 				"value" : repeatMin
@@ -605,6 +587,43 @@ function MetadataProviderStub() {
 						.concat(createArrayWithRecordInfoAndNameInDataAndLinkedTextIdAndDefTextId(idToGet))
 			};
 		}
+		if (idToGet === "groupIdTwoTextChildrenOneWritePermission") {
+			return {
+				"name" : "metadata",
+				"attributes" : {
+					"type" : "group"
+				},
+				"children" : [ {
+					"name" : "childReferences",
+					"children" : [ createChildReferenceWithRefAndRepeatId1to1(
+							"metadataTextVariable", "textVariableId", "1"),
+							{"name" : "childReference",
+							"repeatId" : "2",
+							"children" : [ 
+								{
+								"name" : "ref",
+								"children" : [ {
+									"name" : "linkedRecordType",
+									"value" : "metadata"
+								}, {
+									"name" : "linkedRecordId",
+									"value" : "numVariableId"
+								} ]
+							}, {
+								"name" : "repeatMin",
+								"value" : "1"
+							}, {
+								"name" : "repeatMax",
+								"value" : "1"
+							},{
+					              "name": "recordPartConstraint",
+					              "value": "write"
+					            } ]
+						}]
+				} ]
+						.concat(createArrayWithRecordInfoAndNameInDataAndLinkedTextIdAndDefTextId(idToGet))
+			};
+		}
 		if (idToGet === "groupIdOneTextChild2") {
 			return {
 				"name" : "metadata",
@@ -615,10 +634,6 @@ function MetadataProviderStub() {
 					"name" : "childReferences",
 					"children" : [ createChildReferenceWithRefAndRepeatId1to1(
 							"metadataTextVariable", "textVariableId", "1") ]
-				// }
-				// ].concat(createArrayWithRecordInfoAndNameInDataAndTextIdAndDefTextId("groupIdOneTextChild"))
-				// } ].concat([ createRecordInfoJson(idToGet)
-				// ].concat(createNameInDataTextIdDefTextId2(idToGet)))
 				} ]
 						.concat([ createRecordInfoJson("groupIdOneTextChild") ]
 								.concat(createNameInDataLinkedTextIdDefTextIdWithNameInDataAndId(
@@ -1116,7 +1131,6 @@ function MetadataProviderStub() {
 									"metadataTextVariable", "textVar",
 									"textVariable", "1", "1", "3") ]
 						} ]
-						// .concat(createArrayWithRecordInfoAndNameInDataAndTextIdAndDefTextId(idToGet))
 						.concat(createArrayWithRecordInfoAndNameInDataAndLinkedTextIdAndDefTextId("textVarRepeat1to3InGroupOneAttribute"))
 			};
 		}
@@ -1752,11 +1766,6 @@ function MetadataProviderStub() {
 							"value" : "recordTypeTypeChoice2"
 						} ]
 					}
-					// , {
-					// "name" : "ref",
-					// "repeatId" : "2",
-					// "value" : "itemUnknown"
-					// }
 					]
 				} ],
 				"attributes" : {
@@ -2199,7 +2208,6 @@ function MetadataProviderStub() {
 								"name" : "linkedRecordId",
 								"value" : "recordInfoPVarAttributeGroup"
 							} ]
-						// "value" : "recordInfo"
 						}, {
 							"name" : "repeatMin",
 							"value" : "1"
@@ -7174,14 +7182,6 @@ function MetadataProviderStub() {
 							"name" : "refGroup",
 							"repeatId" : "0",
 							"children" : [
-							// {
-							// "name": "textStyle",
-							// "value": "h2TextStyle"
-							// },
-							// {
-							// "name": "childStyle",
-							// "value": "fourChildStyle"
-							// },
 							{
 								"name" : "ref",
 								"children" : [ {

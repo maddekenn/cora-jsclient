@@ -80,7 +80,7 @@ QUnit.test("testValidateGroupIdOneTextChild1to1WithData", function(assert) {
 		"children" : [ {
 			"name" : "textVariableId",
 			"value" : "A Value"
-		} ]
+		}, ]
 	};
 
 	var factored = this.metadataValidatorFactory.factor("groupIdOneTextChild", data);
@@ -1835,3 +1835,104 @@ QUnit.test("testValidateGroupInGroupIdOneTextChild0to1OneCollectionChildWithFina
 	
 	assert.strictEqual(messages.length, 2);
 });
+
+QUnit.test("testValidateTwoChildrenOneWithConstraintsNoValueNOWritePermission", function(assert) {
+	var data = {
+			"name" : "groupIdTwoTextChildrenOneWritePermission",
+			"children" : [ {
+				"name" : "textVariableId",
+				"value" : "A Value"
+			},{
+				"name" : "numVariableId",
+				"value" : "" 
+			}]
+	};
+	var specForPermission = {
+			"metadataId" : "groupIdTwoTextChildrenOneWritePermission",
+			"data" : data,
+			"metadataProvider" : this.metadataProvider,
+			"pubSub" : CORATEST.pubSubSpy(),
+			"writePermissions" : []
+		};
+	var metadataValidator = CORA.metadataValidator(specForPermission);
+	var validationResult = metadataValidator.validate();
+	assert.ok(validationResult);
+//	var messages = this.pubSub.getMessages();
+//	assert.strictEqual(messages.length, 0);
+});
+
+QUnit.test("testValidateTwoChildrenOneWithConstraintsNoValueHasWritePermission", function(assert) {
+	var data = {
+			"name" : "groupIdTwoTextChildrenOneWritePermission",
+			"children" : [ {
+				"name" : "textVariableId",
+				"value" : "A Value"
+			},{
+				"name" : "numVariableId",
+				"value" : "" 
+			}]
+	};
+	var specForPermission = {
+			"metadataId" : "groupIdTwoTextChildrenOneWritePermission",
+			"data" : data,
+			"metadataProvider" : this.metadataProvider,
+			"pubSub" : CORATEST.pubSubSpy(),
+			"writePermissions" : ["numVariableId"]
+		};
+	var metadataValidator = CORA.metadataValidator(specForPermission);
+	var validationResult = metadataValidator.validate();
+	assert.notOk(validationResult);
+//	var messages = this.pubSub.getMessages();
+//	assert.strictEqual(messages.length, 0);
+});
+
+QUnit.test("testValidateGroupIdTwoTextChildrenOneWithConstraintsHasWritePermission", function(assert) {
+	var data = {
+			"name" : "groupIdTwoTextChildrenOneWritePermission",
+			"children" : [ {
+				"name" : "textVariableId",
+				"value" : "A Value"
+			},{
+				"name" : "numVariableId",
+				"value" : "4" 
+			}]
+	};
+	var specForPermission = {
+			"metadataId" : "groupIdTwoTextChildrenOneWritePermission",
+			"data" : data,
+			"metadataProvider" : this.metadataProvider,
+			"pubSub" : CORATEST.pubSubSpy(),
+			"writePermissions" : ["numVariableId"]
+		};
+	var metadataValidator = CORA.metadataValidator(specForPermission);
+	var validationResult = metadataValidator.validate();
+	assert.ok(validationResult);
+//	var messages = this.pubSub.getMessages();
+//	assert.strictEqual(messages.length, 0);
+});
+
+QUnit.test("testValidateGroupIdTwoTextChildrenOneWithConstraintsHasValueNOWritePermission", function(assert) {
+	var data = {
+			"name" : "groupIdTwoTextChildrenOneWritePermission",
+			"children" : [ {
+				"name" : "textVariableId",
+				"value" : "A Value"
+			},{
+				"name" : "numVariableId",
+				"value" : "4" 
+			}]
+	};
+	var specForPermission = {
+			"metadataId" : "groupIdTwoTextChildrenOneWritePermission",
+			"data" : data,
+			"metadataProvider" : this.metadataProvider,
+			"pubSub" : CORATEST.pubSubSpy(),
+			"writePermissions" : ["NOTnumVariableId"]
+		};
+	var metadataValidator = CORA.metadataValidator(specForPermission);
+	var validationResult = metadataValidator.validate();
+	assert.ok(validationResult);
+//	var messages = this.pubSub.getMessages();
+//	assert.strictEqual(messages.length, 0);
+});
+

@@ -30,6 +30,14 @@ var CORA = (function(cora) {
 					.getFirstChildByNameInData('childReferences');
 			var topLevelPath = {};
 			topLevelChildReferences.children.forEach(function(childReference) {
+				var cChild = CORA.coraData(childReference);
+				
+				if(cChild.containsChildWithNameInData("recordPartConstraint")){
+					var hasPermission = permissionExistsForChild(cChild);
+					if(!hasPermission){
+						return true;
+					}
+				}
 				var childResult = CORA.metadataChildValidator(childReference, topLevelPath,
 						topLevelData, spec.metadataProvider, spec.pubSub);
 				if (!childResult.everythingOkBelow) {
@@ -37,6 +45,31 @@ var CORA = (function(cora) {
 				}
 			});
 			return childrenResult;
+		}
+		
+		const permissionExistsForChild = function(cChild){
+			let nameInData = getNameInData(cChild);
+			let writePermissions = spec.writePermissions;
+			for(var i=0; i<writePermissions.length; i++){
+				if(writePermissions[i] === nameInData){
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		const getNameInData = function(cChild){
+			let cRef = CORA.coraData(cChild.getFirstChildByNameInData("ref"));
+			let ref = cRef.getFirstAtomicValueByNameInData("linkedRecordId");
+			return getNameInDataForMetadataId(ref);
+		
+		}
+		
+		
+		function getNameInDataForMetadataId(refIn) {
+			var metadataElement = getMetadataById(refIn);
+			return metadataElement.getFirstAtomicValueByNameInData("nameInData");
 		}
 
 		function getMetadataById(id) {
