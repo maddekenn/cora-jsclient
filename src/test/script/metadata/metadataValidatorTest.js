@@ -1936,3 +1936,27 @@ QUnit.test("testValidateGroupIdTwoTextChildrenOneWithConstraintsHasValueNOWriteP
 //	assert.strictEqual(messages.length, 0);
 });
 
+QUnit.test("testValidateGroupIdTwoTextChildrenOneWithConstraintsHasValueWritePermissionsUndefined", function(assert) {
+	var data = {
+			"name" : "groupIdTwoTextChildrenOneWritePermission",
+			"children" : [ {
+				"name" : "textVariableId",
+				"value" : "A Value"
+			},{
+				"name" : "numVariableId",
+				"value" : "4" 
+			}]
+	};
+	var specForPermission = {
+			"metadataId" : "groupIdTwoTextChildrenOneWritePermission",
+			"data" : data,
+			"metadataProvider" : this.metadataProvider,
+			"pubSub" : CORATEST.pubSubSpy()
+		};
+	var metadataValidator = CORA.metadataValidator(specForPermission);
+	var validationResult = metadataValidator.validate();
+	assert.ok(validationResult);
+//	var messages = this.pubSub.getMessages();
+//	assert.strictEqual(messages.length, 0);
+});
+

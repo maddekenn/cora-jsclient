@@ -30,13 +30,8 @@ var CORA = (function(cora) {
 					.getFirstChildByNameInData('childReferences');
 			var topLevelPath = {};
 			topLevelChildReferences.children.forEach(function(childReference) {
-				var cChild = CORA.coraData(childReference);
-				
-				if(cChild.containsChildWithNameInData("recordPartConstraint")){
-					var hasPermission = permissionExistsForChild(cChild);
-					if(!hasPermission){
-						return true;
-					}
+				if(validationShouldBeIgnored(childReference)){
+					return true;
 				}
 				var childResult = CORA.metadataChildValidator(childReference, topLevelPath,
 						topLevelData, spec.metadataProvider, spec.pubSub);
@@ -47,7 +42,23 @@ var CORA = (function(cora) {
 			return childrenResult;
 		}
 		
+		const validationShouldBeIgnored = function(childReference){
+			let cChild = CORA.coraData(childReference);
+			if(cChild.containsChildWithNameInData("recordPartConstraint")){
+				let shouldBeValidated = permissionExistsForChild(cChild);
+				if(!shouldBeValidated){
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		const permissionExistsForChild = function(cChild){
+			return spec.writePermissions !== undefined && 
+				userHasPermission(cChild);
+		}
+		
+		const userHasPermission = function(cChild){
 			let nameInData = getNameInData(cChild);
 			let writePermissions = spec.writePermissions;
 			for(var i=0; i<writePermissions.length; i++){
@@ -55,7 +66,6 @@ var CORA = (function(cora) {
 					return true;
 				}
 			}
-			
 			return false;
 		}
 		
@@ -65,7 +75,6 @@ var CORA = (function(cora) {
 			return getNameInDataForMetadataId(ref);
 		
 		}
-		
 		
 		function getNameInDataForMetadataId(refIn) {
 			var metadataElement = getMetadataById(refIn);
